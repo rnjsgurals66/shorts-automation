@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쇼츠 자동화 시스템</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 유튜브 쇼츠 자동 제작 시스템</h1>
+        
+        <div class="card">
+            <h2>📊 시스템 상태</h2>
+            <div id="status">준비 완료</div>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ 제작 설정</h2>
+            <label>
+                영상 개수:
+                <input type="number" id="videoCount" value="3" min="1" max="10">
+            </label>
+        </div>
+
+        <div class="card">
+            <button id="startBtn" class="start-btn">
+                🚀 영상 제작 시작!
+            </button>
+        </div>
+
+        <div class="card">
+            <h2>📝 진행 상황</h2>
+            <div id="progress">
+                대기 중...
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>✅ 완성된 영상</h2>
+            <div id="results">
+                아직 제작된 영상이 없습니다.
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
