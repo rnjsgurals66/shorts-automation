@@ -10,36 +10,108 @@
     <div class="container">
         <h1>🎬 유튜브 쇼츠 자동 제작 시스템</h1>
         
-        <div class="card">
-            <h2>📊 시스템 상태</h2>
-            <div id="status">준비 완료</div>
-        </div>
-
-        <div class="card">
-            <h2>⚙️ 제작 설정</h2>
-            <label>
-                영상 개수:
-                <input type="number" id="videoCount" value="3" min="1" max="10">
-            </label>
-        </div>
-
-        <div class="card">
-            <button id="startBtn" class="start-btn">
-                🚀 영상 제작 시작!
-            </button>
-        </div>
-
-        <div class="card">
-            <h2>📝 진행 상황</h2>
-            <div id="progress">
-                대기 중...
+        <!-- 모드 선택 화면 -->
+        <div id="modeSelection" class="card">
+            <h2>🎯 제작 모드 선택</h2>
+            <div class="mode-buttons">
+                <button class="mode-btn" onclick="selectMode('satire')">
+                    <div class="mode-icon">🐶</div>
+                    <div class="mode-title">풍자 쇼츠</div>
+                    <div class="mode-desc">동물 캐릭터 사회 풍자 영상</div>
+                </button>
+                
+                <button class="mode-btn" onclick="selectMode('coupang')">
+                    <div class="mode-icon">🛍️</div>
+                    <div class="mode-title">쿠팡 쇼츠</div>
+                    <div class="mode-desc">신박한 상품 소개 영상</div>
+                </button>
             </div>
         </div>
 
-        <div class="card">
-            <h2>✅ 완성된 영상</h2>
-            <div id="results">
-                아직 제작된 영상이 없습니다.
+        <!-- 풍자 쇼츠 설정 -->
+        <div id="satireMode" class="mode-container" style="display: none;">
+            <div class="card">
+                <h2>🐶 풍자 쇼츠 제작</h2>
+                <button class="back-btn" onclick="backToModeSelection()">← 돌아가기</button>
+            </div>
+
+            <div class="card">
+                <h2>📊 시스템 상태</h2>
+                <div id="satirStatus">준비 완료</div>
+            </div>
+
+            <div class="card">
+                <h2>⚙️ 제작 설정</h2>
+                <label>
+                    영상 개수:
+                    <input type="number" id="satirVideoCount" value="3" min="1" max="10">
+                </label>
+            </div>
+
+            <div class="card">
+                <button id="satirStartBtn" class="start-btn" onclick="startSatireAutomation()">
+                    🚀 풍자 영상 제작 시작!
+                </button>
+            </div>
+
+            <div class="card">
+                <h2>📝 진행 상황</h2>
+                <div id="satirProgress">대기 중...</div>
+            </div>
+
+            <div class="card">
+                <h2>✅ 완성된 영상</h2>
+                <div id="satirResults">아직 제작된 영상이 없습니다.</div>
+            </div>
+        </div>
+
+        <!-- 쿠팡 쇼츠 설정 -->
+        <div id="coupangMode" class="mode-container" style="display: none;">
+            <div class="card">
+                <h2>🛍️ 쿠팡 쇼츠 제작</h2>
+                <button class="back-btn" onclick="backToModeSelection()">← 돌아가기</button>
+            </div>
+
+            <div class="card">
+                <h2>📊 시스템 상태</h2>
+                <div id="coupangStatus">준비 완료</div>
+            </div>
+
+            <div class="card">
+                <h2>🎬 틱톡 영상 분석</h2>
+                <label>
+                    틱톡 링크:
+                    <input type="text" id="tiktokUrl" placeholder="https://www.tiktok.com/@username/video/123...">
+                </label>
+                <label>
+                    생성 스타일:
+                    <select id="videoStyle">
+                        <option value="review">리뷰 스타일</option>
+                        <option value="unboxing">언박싱 스타일</option>
+                        <option value="demo">사용 시연 스타일</option>
+                        <option value="comparison">비교 분석 스타일</option>
+                    </select>
+                </label>
+                <label>
+                    영상 개수 (A/B 테스트):
+                    <input type="number" id="coupangVideoCount" value="3" min="1" max="5">
+                </label>
+            </div>
+
+            <div class="card">
+                <button id="coupangStartBtn" class="start-btn" onclick="startCoupangAutomation()">
+                    🚀 쿠팡 영상 제작 시작!
+                </button>
+            </div>
+
+            <div class="card">
+                <h2>📝 진행 상황</h2>
+                <div id="coupangProgress">대기 중...</div>
+            </div>
+
+            <div class="card">
+                <h2>✅ 완성된 영상</h2>
+                <div id="coupangResults">아직 제작된 영상이 없습니다.</div>
             </div>
         </div>
     </div>
