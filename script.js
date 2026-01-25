@@ -1,4 +1,33 @@
-// 모드 선택 함수
+// ========== API 연동 준비 ==========
+
+// Config 불러오기 (브라우저에서는 직접 참조)
+// const CONFIG = require('./config.js'); // Node.js 환경
+// 브라우저 환경에서는 config.js를 script 태그로 먼저 로드해야 함
+
+// API 호출 헬퍼 함수
+async function callAPI(url, options = {}) {
+    try {
+        const response = await fetch(url, {
+            method: options.method || 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            },
+            body: options.body ? JSON.stringify(options.body) : undefined
+        });
+        
+        if (!response.ok) {
+            throw new Error(`API 호출 실패: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('API 호출 에러:', error);
+        throw error;
+    }
+}
+
+// ========== 기존 코드 시작 ==========// 모드 선택 함수
 function selectMode(mode) {
     document.getElementById('modeSelection').style.display = 'none';
     
