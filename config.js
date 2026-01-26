@@ -2,7 +2,7 @@
 
 const CONFIG = {
     // Claude API
-    CLAUDE_API_KEY: 'YOUR_CLAUDE_API_KEY',
+    CLAUDE_API_KEY: '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',
     CLAUDE_API_URL: 'https://api.anthropic.com/v1/messages',
     CLAUDE_MODEL: 'claude-sonnet-4-20250514',
     
