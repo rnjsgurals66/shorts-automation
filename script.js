@@ -99,24 +99,36 @@ async function startSatireAutomation() {
 }
 
 async function createSatireVideo(index, progressDiv, resultsDiv) {
-    const steps = [
-        '🔍 젠스파크로 최신 뉴스 검색 중...',
-        '✍️ Claude가 풍자 대본 작성 중...',
-        '🐶 캐럿 AI로 강아지 캐릭터 이미지 생성 중...',
-        '🎤 타입캐스트로 할아버지/손자 음성 생성 중...',
-        '🎬 캐럿 AI로 립싱크 영상 제작 중...',
-        '🎵 자막 및 배경음악 추가 중...',
-        '✅ 영상 완성!'
+    const topics = [
+        '최근 정치 이슈',
+        '경제 동향 뉴스',  
+        '사회 문제'
     ];
     
-    progressDiv.textContent += `\n\n📹 풍자 영상 ${index} 제작 시작:\n`;
+    const topic = topics[index - 1];
     
-    for (const step of steps) {
-        progressDiv.textContent += `  ${step}\n`;
-        progressDiv.scrollTop = progressDiv.scrollHeight;
+    progressDiv.textContent += `\n\n📰 풍자 영상 ${index} 제작 시작:\n`;
+    
+    try {
+        // 1. Claude로 대본 생성
+        progressDiv.textContent += `🤖 Claude가 풍자 대본 작성 중...\n`;
+        const script = await generateScript(topic, 'satire');
+        progressDiv.textContent += `✅ 대본 완성: "${script.substring(0, 50)}..."\n`;
+        
+        // 2. 나머지는 시뮬레이션 (TTS/Video는 추후 구현)
+        progressDiv.textContent += `🎤 음성 생성 중... (시뮬레이션)\n`;
         await delay(2000);
+        
+        progressDiv.textContent += `🎬 영상 합성 중... (시뮬레이션)\n`;
+        await delay(2000);
+        
+        progressDiv.textContent += `✅ 영상 완성!\n`;
+        
+    } catch (error) {
+        progressDiv.textContent += `❌ 오류: ${error.message}\n`;
+        throw error;
     }
-    
+
     addVideoResult(index, resultsDiv, 'satire');
 }
 
