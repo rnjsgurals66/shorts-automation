@@ -197,27 +197,31 @@ async function startCoupangAutomation() {
 }
 
 async function createCoupangVideo(index, style, progressDiv, resultsDiv) {
-    const steps = [
-        '📥 틱톡 영상 다운로드 중...',
-        '🔍 AI로 영상 내용 분석 중...',
-        '🏷️ 상품 정보 추출 중...',
-        '🔗 쿠팡에서 해당 상품 검색 중...',
-        '✍️ Claude가 새로운 대본 작성 중...',
-        '🎨 새로운 스타일로 영상 생성 중...',
-        '🎤 음성 생성 중...',
-        '🎬 최종 영상 편집 중...',
-        '🔗 쿠팡 파트너스 링크 추가 중...',
-        '✅ 영상 완성!'
-    ];
+    // 틱톡 URL은 UI에서 가져옴 (실제 구현 시)
+    const productName = `샘플 제품 ${index}`;
     
-    progressDiv.textContent += `\n\n📹 버전 ${index} 제작 시작 (${getStyleName(style)}):\n`;
+    progressDiv.textContent += `\n\n🛍️ 비전 ${index} 제작 시작 (${getStyleName(style)}):\n`;
     
-    for (const step of steps) {
-        progressDiv.textContent += `  ${step}\n`;
-        progressDiv.scrollTop = progressDiv.scrollHeight;
+    try {
+        // 1. Claude로 대본 생성
+        progressDiv.textContent += `🤖 Claude가 리뷰 대본 작성 중...\n`;
+        const script = await generateScript(productName, 'coupang');
+        progressDiv.textContent += `✅ 대본 완성: "${script.substring(0, 50)}..."\n`;
+        
+        // 2. 나머지는 시뮬레이션 (TTS/Video는 추후 구현)
+        progressDiv.textContent += `🎤 음성 생성 중... (시뮬레이션)\n`;
         await delay(2000);
+        
+        progressDiv.textContent += `🎬 영상 합성 중... (시뮬레이션)\n`;
+        await delay(2000);
+        
+        progressDiv.textContent += `✅ 영상 완성!\n`;
+        
+    } catch (error) {
+        progressDiv.textContent += `❌ 오류: ${error.message}\n`;
+        throw error;
     }
-    
+
     addVideoResult(index, resultsDiv, 'coupang', style);
 }
 
