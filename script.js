@@ -237,9 +237,9 @@ async function createCoupangVideo(index, style, progressDiv, resultsDiv) {
             audioUrl = await generateVoice(script, '기본');
             progressDiv.textContent += '✅ 음성 생성 완료!\n';
         } catch (ttsError) {
-            progressDiv.textContent += '⚠️ 음성 생성 실패, 시뮬레이션으로 진행\n';
-            await delay(1000);
-    
+        progressDiv.textContent += '⚠️ 음성 생성 실패, 시뮬레이션으로 진행\n';
+        await delay(1000);
+    }
         
         // 3. 영상 생성 (Creatomate API)
             progressDiv.textContent += `🎬 영상 생성 중...\n`;
