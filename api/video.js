@@ -98,5 +98,7 @@ export default async function handler(req, res) {
         });
 
     } catch (error) {
-        console.error('영상 생성 오류:', error);
-        return res.status(500).json({ error: '서버 오류', message: error.message });
+    console.error('영상 생성 오류:', error);
+    return res.status(500).json({ error: '서버 오류', message: error.message });
+  }
+}
