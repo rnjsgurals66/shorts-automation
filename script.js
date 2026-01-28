@@ -115,9 +115,15 @@ async function createSatireVideo(index, progressDiv, resultsDiv) {
         const script = await generateScript(topic, 'satire');
         progressDiv.textContent += `✅ 대본 완성: "${script.substring(0, 50)}..."\n`;
         
-        // 2. 나머지는 시뮬레이션 (TTS/Video는 추후 구현)
-        progressDiv.textContent += `🎤 음성 생성 중... (시뮬레이션)\n`;
-        await delay(2000);
+       // 2. TTS 음성 생성 (ElevenLabs API)
+            progressDiv.textContent += `🎤 음성 생성 중...\n`;
+            try {
+                const audioUrl = await generateVoice(script, '할아버지');
+                progressDiv.textContent += `✅ 음성 생성 완료!\n`;
+            } catch (ttsError) {
+                progressDiv.textContent += `⚠️ 음성 생성 실패, 시뮬레이션으로 진행\n`;
+                await delay(1000);
+            }
         
         progressDiv.textContent += `🎬 영상 합성 중... (시뮬레이션)\n`;
         await delay(2000);
@@ -208,9 +214,15 @@ async function createCoupangVideo(index, style, progressDiv, resultsDiv) {
         const script = await generateScript(productName, 'coupang');
         progressDiv.textContent += `✅ 대본 완성: "${script.substring(0, 50)}..."\n`;
         
-        // 2. 나머지는 시뮬레이션 (TTS/Video는 추후 구현)
-        progressDiv.textContent += `🎤 음성 생성 중... (시뮬레이션)\n`;
-        await delay(2000);
+       // 2. TTS 음성 생성 (ElevenLabs API)
+            progressDiv.textContent += `🎤 음성 생성 중...\n`;
+            try {
+                const audioUrl = await generateVoice(script, '기본');
+                progressDiv.textContent += `✅ 음성 생성 완료!\n`;
+            } catch (ttsError) {
+                progressDiv.textContent += `⚠️ 음성 생성 실패, 시뮬레이션으로 진행\n`;
+                await delay(1000);
+            }
         
         progressDiv.textContent += `🎬 영상 합성 중... (시뮬레이션)\n`;
         await delay(2000);
