@@ -1,6 +1,5 @@
 // Vercel Serverless Function - Creatomate 영상 생성 API
 export default async function handler(req, res) {
-    // CORS 설정
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -26,6 +25,10 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'Creatomate API 키가 설정되지 않았습니다' });
         }
 
+        // 배경색 설정
+        const bgColor = mode === 'satire' ? '#1a1a2e' : '#4A90D9';
+        const textColor = '#ffffff';
+
         // Creatomate API로 영상 생성
         const response = await fetch('https://api.creatomate.com/v1/renders', {
             method: 'POST',
@@ -38,35 +41,41 @@ export default async function handler(req, res) {
                 width: 1080,
                 height: 1920,
                 frame_rate: 30,
-                duration: 60,
+                duration: audioUrl ? null : 10,
                 source: {
                     elements: [
-                        // 배경
                         {
-                            type: 'shape',
-                            shape: 'rectangle',
-                            width: '100%',
-                            height: '100%',
-                            fill_color: mode === 'satire' ? '#1a1a2e' : '#ffffff'
+                            type: 'composition',
+                            track: 1,
+                            elements: [
+                                {
+                                    type: 'shape',
+                                    track: 1,
+                                    shape: 'rectangle',
+                                    width: '100%',
+                                    height: '100%',
+                                    fill_color: bgColor
+                                },
+                                {
+                                    type: 'text',
+                                    track: 2,
+                                    text: script.substring(0, 300),
+                                    font_family: 'Noto Sans KR',
+                                    font_weight: '700',
+                                    font_size: '7 vmin',
+                                    fill_color: textColor,
+                                    x: '50%',
+                                    y: '50%',
+                                    width: '80%',
+                                    x_anchor: '50%',
+                                    y_anchor: '50%',
+                                    text_align: 'center'
+                                }
+                            ]
                         },
-                        // 자막 텍스트
-                        {
-                            type: 'text',
-                            text: script.substring(0, 200),
-                            font_family: 'Noto Sans KR',
-                            font_weight: 700,
-                            font_size: '48px',
-                            fill_color: mode === 'satire' ? '#ffffff' : '#000000',
-                            x: '50%',
-                            y: '80%',
-                            width: '90%',
-                            x_anchor: '50%',
-                            y_anchor: '50%',
-                            text_align: 'center'
-                        },
-                        // 오디오 (있는 경우)
                         ...(audioUrl ? [{
                             type: 'audio',
+                            track: 2,
                             source: audioUrl
                         }] : [])
                     ]
@@ -91,5 +100,3 @@ export default async function handler(req, res) {
     } catch (error) {
         console.error('영상 생성 오류:', error);
         return res.status(500).json({ error: '서버 오류', message: error.message });
-    }
-}
