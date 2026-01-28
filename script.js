@@ -125,8 +125,24 @@ async function createSatireVideo(index, progressDiv, resultsDiv) {
                 await delay(1000);
             }
         
-        progressDiv.textContent += `🎬 영상 합성 중... (시뮬레이션)\n`;
-        await delay(2000);
+       // 3. 영상 생성 (Creatomate API)
+            progressDiv.textContent += `🎬 영상 생성 중...\n`;
+            try {
+                const videoResponse = await fetch('/api/video', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ script, audioUrl, mode: 'satire' })
+                });
+                const videoData = await videoResponse.json();
+                if (videoData.success) {
+                    progressDiv.textContent += `✅ 영상 생성 완료!\n`;
+                } else {
+                    throw new Error(videoData.error);
+                }
+            } catch (videoError) {
+                progressDiv.textContent += `⚠️ 영상 생성 실패, 시뮬레이션으로 진행\n`;
+                await delay(1000);
+            }
         
         progressDiv.textContent += `✅ 영상 완성!\n`;
         
@@ -224,8 +240,24 @@ async function createCoupangVideo(index, style, progressDiv, resultsDiv) {
                 await delay(1000);
             }
         
-        progressDiv.textContent += `🎬 영상 합성 중... (시뮬레이션)\n`;
-        await delay(2000);
+        // 3. 영상 생성 (Creatomate API)
+            progressDiv.textContent += `🎬 영상 생성 중...\n`;
+            try {
+                const videoResponse = await fetch('/api/video', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ script, audioUrl, mode: 'coupang' })
+                });
+                const videoData = await videoResponse.json();
+                if (videoData.success) {
+                    progressDiv.textContent += `✅ 영상 생성 완료!\n`;
+                } else {
+                    throw new Error(videoData.error);
+                }
+            } catch (videoError) {
+                progressDiv.textContent += `⚠️ 영상 생성 실패, 시뮬레이션으로 진행\n`;
+                await delay(1000);
+            }
         
         progressDiv.textContent += `✅ 영상 완성!\n`;
         
