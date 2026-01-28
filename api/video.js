@@ -93,4 +93,3 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: '서버 오류', message: error.message });
     }
 }
-핵심 변경: template_id: null 삭제하고, source: { elements: [...] }
