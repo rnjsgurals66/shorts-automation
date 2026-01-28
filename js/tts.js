@@ -46,20 +46,25 @@ function delay(ms) {
  * @returns {Promise<Array>} - 생성된 음성 URL 배열
  */
 async function generateMultipleVoices(dialogues) {
-    const audioUrls = [];
-    
-    for (const dialogue of dialogues) {
-        const voice = dialogue.character || '기본';
-        const audioUrl = await generateVoice(dialogue.text, voice);
-        audioUrls.push({
-            character: dialogue.character,
-            text: dialogue.text,
-            audioUrl: audioUrl
-        });
-        
-        // API 호출 간 딜레이 (rate limit 방지)
-        await delay(500);
+    try {
+        const audioUrls = [];
+
+        for (const dialogue of dialogues) {
+            const voice = dialogue.character || '기본';
+            const audioUrl = await generateVoice(dialogue.text, voice);
+            audioUrls.push({
+                character: dialogue.character,
+                text: dialogue.text,
+                audioUrl: audioUrl
+            });
+
+            // API 호출 간 딜레이 (rate limit 방지)
+            await delay(500);
+        }
+
+        return audioUrls;
+
+    } catch (error) {
+        console.error('다중 음성 생성 실패:', error);
+        throw error;
     }
-    
-    return audioUrls;
-}
