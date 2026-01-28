@@ -231,14 +231,15 @@ async function createCoupangVideo(index, style, progressDiv, resultsDiv) {
         progressDiv.textContent += `✅ 대본 완성: "${script.substring(0, 50)}..."\n`;
         
        // 2. TTS 음성 생성 (ElevenLabs API)
-            progressDiv.textContent += `🎤 음성 생성 중...\n`;
-            try {
-                const audioUrl = await generateVoice(script, '기본');
-                progressDiv.textContent += `✅ 음성 생성 완료!\n`;
-            } catch (ttsError) {
-                progressDiv.textContent += `⚠️ 음성 생성 실패, 시뮬레이션으로 진행\n`;
-                await delay(1000);
-            }
+        progressDiv.textContent += '🎤 음성 생성 중...\n';
+        let audioUrl = null;
+        try {
+            audioUrl = await generateVoice(script, '기본');
+            progressDiv.textContent += '✅ 음성 생성 완료!\n';
+        } catch (ttsError) {
+            progressDiv.textContent += '⚠️ 음성 생성 실패, 시뮬레이션으로 진행\n';
+            await delay(1000);
+    
         
         // 3. 영상 생성 (Creatomate API)
             progressDiv.textContent += `🎬 영상 생성 중...\n`;
