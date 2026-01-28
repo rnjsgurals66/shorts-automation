@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 // Vercel Serverless Function - ElevenLabs TTS API + Cloudinary 업로드
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -77,7 +78,6 @@ export default async function handler(req, res) {
         }
 
         // Cloudinary 업로드
-        const crypto = require('crypto');
         const timestamp = Math.round(Date.now() / 1000);
         const signature = crypto
             .createHash('sha1')
