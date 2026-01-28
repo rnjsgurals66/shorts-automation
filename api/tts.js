@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     const voiceIds = {
       '할아버지': 'ODq5zmih8GrVes37Dizd',  // Patrick
       '손자': 'jBpfuIE2acCO8z3wKNLl',       // Gigi
-      '기본': 'twenty_one_savage'           // 기본 음성
+      '기본': m3gJBS8OofDJfycyA2Ip
     };
 
     const voiceId = voiceIds[voice] || voiceIds['기본'];
