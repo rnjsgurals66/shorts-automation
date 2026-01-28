@@ -1,4 +1,6 @@
 // ========== API 연동 준비 ==========
+// 생성된 영상 URL 저장용
+window.generatedVideos = {};
 
 // Config 불러오기 (브라우저에서는 직접 참조)
 // const CONFIG = require('./config.js'); // Node.js 환경
@@ -252,6 +254,10 @@ async function createCoupangVideo(index, style, progressDiv, resultsDiv) {
                 const videoData = await videoResponse.json();
                 if (videoData.success) {
                     progressDiv.textContent += `✅ 영상 생성 완료!\n`;
+                    // 영상 URL 저장
+                if (videoData.url) {
+                    window.generatedVideos[`coupang_${index}`] = videoData.url;
+                }
                 } else {
                     throw new Error(videoData.error);
                 }
@@ -293,9 +299,18 @@ function addVideoResult(index, resultsDiv, mode, style = '') {
 
 function downloadVideo(index, mode) {
     const modeText = mode === 'satire' ? '풍자' : '쿠팡';
-    alert(`${modeText} 영상 ${index} 다운로드가 시작됩니다!\n\n(실제 구현 시 여기서 파일 다운로드가 진행됩니다)`);
+    const videoUrl = window.generatedVideos && window.generatedVideos[`${mode}_${index}`];
+    
+    if (videoUrl) {
+        const a = document.createElement('a');
+        a.href = videoUrl;
+        a.download = `${modeText}_영상_${index}.mp4`;
+        a.target = '_blank';
+        a.click();
+    } else {
+        alert(`${modeText} 영상 ${index} - 영상 URL을 찾을 수 없습니다. 잠시 후 다시 시도해주세요.`);
+    }
 }
-
 function getStyleName(style) {
     const styles = {
         'review': '리뷰 스타일',
