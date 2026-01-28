@@ -68,3 +68,4 @@ async function generateMultipleVoices(dialogues) {
         console.error('다중 음성 생성 실패:', error);
         throw error;
     }
+}
