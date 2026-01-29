@@ -17,7 +17,7 @@ export default async function handler(req, res) {
         // ▼▼▼ [사장님! 여기에 성우 ID를 넣으세요] ▼▼▼
         // 따옴표("")는 지우지 마시고 글자만 바꾸세요!
         // 예시: const VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; 
-        const VOICE_ID = " 6Vgh4FaCc0SCcWPwcyXa"; 
+        const VOICE_ID = "6Vgh4FaCc0SCcWPwcyXa"; 
 
         if (!apiKey) throw new Error('ElevenLabs API 키가 없습니다.');
         if (!text) throw new Error('변환할 대본이 없습니다.');
