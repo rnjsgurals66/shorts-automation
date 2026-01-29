@@ -2,7 +2,7 @@
 import { ElevenLabsClient } from "elevenlabs";
 
 // ▼ 아래 따옴표 안에 일레븐랩스에서 복사한 '여자 성우 ID'를 넣으세요!
-const VOICE_ID = "YOUR_FEMALE_VOICE_ID_HERE"; 
+const VOICE_ID = " 6Vgh4FaCc0SCcWPwcyXa"; 
 
 export default async function handler(req, res) {
   // CORS 설정
