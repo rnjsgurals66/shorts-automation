@@ -1,59 +1,63 @@
-// api/tts.js
-import { ElevenLabsClient } from "elevenlabs";
-
-// ▼ 아래 따옴표 안에 일레븐랩스에서 복사한 '여자 성우 ID'를 넣으세요!
-const VOICE_ID = " 6Vgh4FaCc0SCcWPwcyXa"; 
+// Vercel Serverless Function - ElevenLabs TTS (Fetch 방식)
+import fetch from 'node-fetch'; // 튼튼한 배달부 소환
 
 export default async function handler(req, res) {
-  // CORS 설정
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    // 1. 기본 설정 (CORS 허용)
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+    if (req.method === 'OPTIONS') return res.status(200).end();
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+    try {
+        const { text } = req.body;
+        const apiKey = process.env.ELEVENLABS_API_KEY;
 
-  const { text } = req.body;
+        // ▼▼▼ [사장님! 여기에 성우 ID를 넣으세요] ▼▼▼
+        // 따옴표("")는 지우지 마시고 글자만 바꾸세요!
+        // 예시: const VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; 
+        const VOICE_ID = " 6Vgh4FaCc0SCcWPwcyXa"; 
 
-  if (!text) return res.status(400).json({ error: '대본이 없습니다.' });
+        if (!apiKey) throw new Error('ElevenLabs API 키가 없습니다.');
+        if (!text) throw new Error('변환할 대본이 없습니다.');
+        if (VOICE_ID === "여기에_성우_ID_붙여넣기") {
+             throw new Error('사장님! tts.js 파일에서 성우 ID를 수정해주세요!');
+        }
 
-  // ★ [미나의 청소기] 괄호, 시간표시, 지문 강제 삭제
-  const cleanText = text
-    .replace(/\[.*?\]/g, "") // [0-2초] 삭제
-    .replace(/\(.*?\)/g, "") // (웃음) 삭제
-    .replace(/[0-9]+초/g, "") // 00초 삭제
-    .replace(/(후킹|본문|마무리|오프닝)[:：]/g, "") // 분류표 삭제
-    .replace(/[\r\n]+/g, " ") // 줄바꿈 정리
-    .trim();
+        console.log(`🎤 목소리 생성 시작 (ID: ${VOICE_ID})`);
 
-  try {
-    const client = new ElevenLabsClient({ apiKey: process.env.ELEVENLABS_API_KEY });
-    
-    // 스트림 방식으로 음성 생성
-    const audioStream = await client.generate({
-      voice: VOICE_ID,
-      text: cleanText,
-      model_id: "eleven_multilingual_v2",
-      voice_settings: { stability: 0.5, similarity_boost: 0.8 }
-    });
+        // 2. 일레븐랩스에 직접 전화 걸기 (SDK 대신 Fetch 사용)
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'audio/mpeg',
+                'xi-api-key': apiKey,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                text: text,
+                model_id: "eleven_multilingual_v2", // 한국어 잘하는 모델
+                voice_settings: {
+                    stability: 0.5,
+                    similarity_boost: 0.75,
+                }
+            })
+        });
 
-    // 오디오 데이터를 버퍼로 변환하여 전송
-    const chunks = [];
-    for await (const chunk of audioStream) {
-      chunks.push(chunk);
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ 일레븐랩스 에러:', errorText);
+            throw new Error(`성우 연결 실패: ${errorText}`);
+        }
+
+        // 3. 음성 파일 받아서 전달
+        const audioBuffer = await response.arrayBuffer();
+        res.setHeader('Content-Type', 'audio/mpeg');
+        res.send(Buffer.from(audioBuffer));
+
+    } catch (error) {
+        console.error('서버 오류:', error);
+        res.status(500).json({ error: error.message });
     }
-    const buffer = Buffer.concat(chunks);
-
-    res.setHeader('Content-Type', 'audio/mpeg');
-    res.status(200).send(buffer);
-
-  } catch (error) {
-    console.error("TTS Error:", error);
-    res.status(500).json({ error: '음성 생성 실패' });
-  }
 }
