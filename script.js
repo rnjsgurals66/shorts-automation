@@ -240,6 +240,35 @@ async function createCoupangVideo(index, tiktokUrl, progressDiv, resultsDiv) {
         // 2. TTS 음성 생성
         progressDiv.textContent += `  🎤 성우가 녹음 중...\n`;
         const audioUrl = await generateVoice(script);
+        // ========== [필수] 버튼 클릭 이벤트 연결하기 ==========
+// 화면이 다 로딩되면 버튼에 기능을 연결합니다.
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // 1. 풍자 쇼츠 '시작' 버튼 연결
+    const satireBtn = document.getElementById('satirStartBtn');
+    if (satireBtn) {
+        satireBtn.addEventListener('click', startSatireAutomation);
+        console.log('✅ 풍자 쇼츠 버튼 연결됨');
+    }
+
+    // 2. 쿠팡 쇼츠 '시작' 버튼 연결
+    const coupangBtn = document.getElementById('coupangStartBtn');
+    if (coupangBtn) {
+        coupangBtn.addEventListener('click', startCoupangAutomation);
+        console.log('✅ 쿠팡 쇼츠 버튼 연결됨');
+    } else {
+        console.error('❌ 경고: 쿠팡 시작 버튼(coupangStartBtn)을 찾을 수 없습니다. HTML ID를 확인하세요.');
+    }
+
+    // 3. (혹시 모를) 모드 선택 카드 연결 
+    // 만약 메인 화면의 큰 버튼이 안 눌리는 거라면 아래 코드가 필요합니다.
+    // (HTML ID가 맞는지 확인이 필요하지만, 일반적인 이름으로 넣어둘게요)
+    const satireCard = document.querySelector('.card-satire'); // 또는 ID
+    const coupangCard = document.querySelector('.card-coupang'); // 또는 ID
+    
+    if (satireCard) satireCard.addEventListener('click', () => selectMode('satire'));
+    if (coupangCard) coupangCard.addEventListener('click', () => selectMode('coupang'));
+});
         progressDiv.textContent += `  🔊 녹음 완료!\n`;
         
         // 3. 영상 합성
