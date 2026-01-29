@@ -112,8 +112,8 @@ async function createSatireVideo(index, progressDiv, resultsDiv) {
     progressDiv.textContent += `\n\n📰 풍자 영상 ${index} 제작 시작:\n`;
     
     try {
-        // 1. Claude로 대본 생성
-        progressDiv.textContent += `🤖 Claude가 풍자 대본 작성 중...\n`;
+        // 1. openai로 대본 생성
+        progressDiv.textContent += `🤖 openai가 풍자 대본 작성 중...\n`;
         const script = await generateScript(topic, 'satire');
         progressDiv.textContent += `✅ 대본 완성: "${script.substring(0, 50)}..."\n`;
         
@@ -227,8 +227,8 @@ async function createCoupangVideo(index, style, progressDiv, resultsDiv) {
     progressDiv.textContent += `\n\n🛍️ 비전 ${index} 제작 시작 (${getStyleName(style)}):\n`;
     
     try {
-        // 1. Claude로 대본 생성
-        progressDiv.textContent += `🤖 Claude가 리뷰 대본 작성 중...\n`;
+        // 1. openai로 대본 생성
+        progressDiv.textContent += `🤖 openai가 리뷰 대본 작성 중...\n`;
         const script = await generateScript(productName, 'coupang');
         progressDiv.textContent += `✅ 대본 완성: "${script.substring(0, 50)}..."\n`;
         
