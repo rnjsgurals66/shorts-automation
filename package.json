@@ -1,5 +1,14 @@
 {
   "name": "shorts-automation",
   "version": "1.0.0",
-  "type": "module"
+  "description": "YouTube Shorts Automation Factory",
+  "main": "index.js",
+  "dependencies": {
+    "openai": "^4.20.1",
+    "elevenlabs": "^0.4.0",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": "18.x"
+  }
 }
