@@ -1,203 +1,108 @@
-// ========== 1. API 호출 도구 (전화기) ==========
-window.generatedVideos = {}; // 영상 주소 저장소
-
-async function callAPI(url, options = {}) {
-    try {
-        const response = await fetch(url, {
-            method: options.method || 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers
-            },
-            body: options.body ? JSON.stringify(options.body) : undefined
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || `서버 에러: ${response.status}`);
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('API 에러:', error);
-        throw error;
-    }
-}
-
-// ========== 2. AI 뇌 (GPT & 성우) ==========
-
-// GPT에게 대본 요청 (미나의 뇌)
-async function generateScript(topic, mode) {
-    console.log(`🧠 GPT에게 요청 중: ${topic} (${mode})`);
-    const data = await callAPI('/api/openai', {
-        method: 'POST',
-        body: { productInfo: topic, videoUrl: mode }
-    });
-    return data.script;
-}
-
-// 성우에게 목소리 요청 (일레븐랩스)
-async function generateVoice(text) {
-    console.log(`🎤 성우 녹음 시작...`);
-    const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
-    });
-
-    if (!response.ok) throw new Error('음성 생성 실패');
-
-    const blob = await response.blob();
-    return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(blob);
-    });
-}
-
-// ========== 3. UI 화면 조작 기능 ==========
-
-function selectMode(mode) {
-    document.getElementById('modeSelection').style.display = 'none';
-    if (mode === 'satire') document.getElementById('satireMode').style.display = 'block';
-    if (mode === 'coupang') document.getElementById('coupangMode').style.display = 'block';
-}
-
-// ========== 4. 풍자 쇼츠 공장 가동 ==========
-
-async function startSatireAutomation() {
-    const startBtn = document.getElementById('satirStartBtn');
-    const statusDiv = document.getElementById('satirStatus');
-    const progressDiv = document.getElementById('satirProgress');
-    const resultsDiv = document.getElementById('satirResults');
-    
-    startBtn.disabled = true;
-    startBtn.textContent = '⏳ 제작 중...';
-    progressDiv.textContent = '🐶 풍자 쇼츠 제작 시작!\n';
-    
-    try {
-        const topic = "최근 가장 핫한 사회 이슈"; // 주제
-        
-        // 1. 대본
-        progressDiv.textContent += `🧠 아이디어 구상 중...\n`;
-        const script = await generateScript(topic, 'satire');
-        progressDiv.textContent += `📝 대본 완료!\n`;
-
-        // 2. 음성
-        progressDiv.textContent += `🎤 녹음 중...\n`;
-        const audioUrl = await generateVoice(script);
-        
-        // 3. 영상 (이미지 필수)
-        progressDiv.textContent += `🎬 영상 편집 중...\n`;
-        const satireImage = "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1080&q=80"; // 강아지 사진
-
-        const videoResponse = await callAPI('/api/video', {
-            method: 'POST',
-            body: { script, audioUrl, productImage: satireImage, mode: 'satire' }
-        });
-
-        if (videoResponse.success) {
-            progressDiv.textContent += `✅ 완성!\n`;
-            window.generatedVideos['satire_1'] = videoResponse.url;
-            addVideoResult(1, resultsDiv, 'satire');
-        }
-
-        statusDiv.textContent = '🎉 제작 성공!';
-        statusDiv.style.background = '#d4edda';
-    } catch (error) {
-        progressDiv.textContent += `❌ 실패: ${error.message}`;
-        statusDiv.textContent = '오류 발생';
-        statusDiv.style.background = '#f8d7da';
-    } finally {
-        startBtn.disabled = false;
-        startBtn.textContent = '🚀 다시 만들기';
-    }
-}
-
-// ========== 5. 쿠팡 쇼츠 공장 가동 ==========
-
-async function startCoupangAutomation() {
-    const startBtn = document.getElementById('coupangStartBtn');
-    const statusDiv = document.getElementById('coupangStatus');
-    const progressDiv = document.getElementById('coupangProgress');
-    const resultsDiv = document.getElementById('coupangResults');
-    const videoCount = parseInt(document.getElementById('coupangVideoCount').value) || 1;
-    
-    startBtn.disabled = true;
-    startBtn.textContent = '⏳ 제작 중...';
-    progressDiv.textContent = '🛍️ 쿠팡 쇼츠 제작 시작!\n';
-    
-    try {
-        for(let i=1; i<=videoCount; i++) {
-            progressDiv.textContent += `\n[영상 ${i}] 작업 시작...\n`;
-            
-            // 1. 대본
-            const script = await generateScript(`쿠팡 대박 상품 ${i}`, 'coupang');
-            progressDiv.textContent += `📝 대본 작성 완료\n`;
-            
-            // 2. 음성
-            const audioUrl = await generateVoice(script);
-            progressDiv.textContent += `🎤 성우 녹음 완료\n`;
-            
-            // 3. 영상 (이미지 필수)
-            const sampleImage = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1080&q=80"; // 상품 사진
-            
-            const videoResponse = await callAPI('/api/video', {
-                method: 'POST',
-                body: { script, audioUrl, productImage: sampleImage, mode: 'coupang' }
-            });
-
-            if (videoResponse.success) {
-                progressDiv.textContent += `✅ 영상 ${i} 완성!\n`;
-                window.generatedVideos[`coupang_${i}`] = videoResponse.url;
-                addVideoResult(i, resultsDiv, 'coupang');
-            }
-        }
-        statusDiv.textContent = '🎉 모든 작업 완료!';
-        statusDiv.style.background = '#d4edda';
-    } catch (error) {
-        progressDiv.textContent += `❌ 오류: ${error.message}`;
-    } finally {
-        startBtn.disabled = false;
-        startBtn.textContent = '🚀 다시 만들기';
-    }
-}
-
-// ========== 6. 결과창 및 다운로드 ==========
-
-function addVideoResult(index, resultsDiv, mode) {
-    const url = window.generatedVideos[`${mode}_${index}`];
-    const div = document.createElement('div');
-    div.innerHTML = `
-        <div style="margin-top:10px; padding:10px; background:#f0f0f0; border-radius:5px;">
-            <strong>${mode === 'satire' ? '풍자' : '쿠팡'} 영상 #${index}</strong>
-            <button onclick="window.open('${url}', '_blank')" style="margin-left:10px; cursor:pointer;">
-                ⬇️ 영상 보기
-            </button>
-        </div>
-    `;
-    resultsDiv.appendChild(div);
-}
-
-// ========== 7. [필수] 버튼 연결 (전선 작업) ==========
-// ★ 이 부분이 맨 아래에 있어야 합니다!
+// script.js (전면 수정본)
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("🔌 버튼 연결 중...");
-    
-    // 풍자 버튼 연결
-    const sBtn = document.getElementById('satirStartBtn');
-    if (sBtn) sBtn.addEventListener('click', startSatireAutomation);
+    console.log("🚀 시스템 준비 완료");
 
-    // 쿠팡 버튼 연결
-    const cBtn = document.getElementById('coupangStartBtn');
-    if (cBtn) cBtn.addEventListener('click', startCoupangAutomation);
+    // 버튼 연결
+    const satireBtn = document.getElementById('satirStartBtn');
+    if (satireBtn) satireBtn.addEventListener('click', () => startProcess('satire'));
 
-    // 카드(메뉴) 클릭 연결
-    const sCard = document.querySelector('.card-satire'); // 클래스명 확인 필요
-    const cCard = document.querySelector('.card-coupang');
-    
-    // 만약 HTML에 onclick="selectMode(...)"가 있다면 아래 두 줄은 없어도 되지만, 안전하게 넣어둠
-    if(sCard) sCard.addEventListener('click', () => selectMode('satire'));
-    if(cCard) cCard.addEventListener('click', () => selectMode('coupang'));
-    
-    console.log("✅ 모든 버튼 연결 완료!");
+    const coupangBtn = document.getElementById('coupangStartBtn');
+    if (coupangBtn) coupangBtn.addEventListener('click', () => startProcess('coupang'));
 });
+
+// 공통 실행 함수
+async function startProcess(mode) {
+    const progressDiv = mode === 'satire' ? document.getElementById('satirProgress') : document.getElementById('coupangProgress');
+    const resultsDiv = mode === 'satire' ? document.getElementById('satirResults') : document.getElementById('coupangResults');
+    const startBtn = mode === 'satire' ? document.getElementById('satirStartBtn') : document.getElementById('coupangStartBtn');
+
+    // 1. 초기화
+    startBtn.disabled = true;
+    startBtn.textContent = "⏳ 진행 중...";
+    progressDiv.textContent = "🚀 작업을 시작합니다...\n";
+    resultsDiv.innerHTML = ""; // 결과창 비우기
+
+    try {
+        const topic = "요즘 핫한 이슈"; // 혹은 입력값 가져오기
+
+        // 2. [OpenAI] 대본 작성
+        progressDiv.textContent += "🧠 1단계: GPT가 대본 쓰는 중...\n";
+        const scriptRes = await fetch('/api/openai', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productInfo: topic })
+        });
+        
+        if (!scriptRes.ok) throw new Error(`OpenAI 오류: ${scriptRes.status}`);
+        const { script } = await scriptRes.json();
+        if (!script) throw new Error("대본이 비어있습니다.");
+        progressDiv.textContent += `✅ 대본 완료: "${script.substring(0, 20)}..."\n`;
+
+
+        // 3. [TTS] 목소리 녹음
+        progressDiv.textContent += "🎤 2단계: 성우 녹음 중...\n";
+        const ttsRes = await fetch('/api/tts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: script })
+        });
+
+        if (!ttsRes.ok) throw new Error(`TTS 오류: ${ttsRes.status}`);
+        
+        // 오디오 파일을 데이터(Blob)로 변환
+        const audioBlob = await ttsRes.blob();
+        // Creatomate에 보낼 수 있게 Base64 문자열로 변환 (중요!)
+        const audioBase64 = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(audioBlob);
+        });
+        progressDiv.textContent += "✅ 목소리 파일 변환 완료!\n";
+
+
+        // 4. [Video] 영상 제작
+        progressDiv.textContent += "🎬 3단계: 영상 편집기 가동...\n";
+        // 테스트용 이미지 (실제로는 DALL-E 이미지나 상품 이미지 사용)
+        const sampleImage = "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=1080&q=80";
+
+        const videoRes = await fetch('/api/video', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                script: script,
+                audioUrl: audioBase64, // 녹음된 파일 전송
+                productImage: sampleImage
+            })
+        });
+
+        if (!videoRes.ok) throw new Error(`영상 API 오류: ${videoRes.status}`);
+        const videoData = await videoRes.json();
+
+        if (videoData.success && videoData.url) {
+            progressDiv.textContent += "🎉 모든 작업 성공!\n";
+            
+            // 결과 버튼 생성
+            const resultHTML = `
+                <div style="margin-top: 15px; padding: 15px; background: #e8f5e9; border: 1px solid #4caf50; border-radius: 8px;">
+                    <p><strong>✅ 영상이 완성되었습니다!</strong></p>
+                    <p style="font-size: 12px; color: #666;">(버튼을 누르고 하얀 화면이 나오면 F5를 눌러주세요)</p>
+                    <button onclick="window.open('${videoData.url}', '_blank')" 
+                        style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                        🎬 영상 보러 가기 (클릭)
+                    </button>
+                </div>
+            `;
+            resultsDiv.innerHTML = resultHTML;
+        } else {
+            throw new Error("영상 주소를 받지 못했습니다.");
+        }
+
+    } catch (error) {
+        console.error(error);
+        progressDiv.textContent += `\n❌ [치명적 오류 발생] ❌\n${error.message}\n`;
+        alert("작업 중 오류가 발생했습니다. 로그를 확인해주세요.");
+    } finally {
+        startBtn.disabled = false;
+        startBtn.textContent = "🚀 다시 시작";
+    }
+}
