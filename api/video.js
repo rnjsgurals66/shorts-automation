@@ -9,14 +9,14 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        const { script, audioUrl, productImage } = req.body;
+        const { script, productImage } = req.body; // audioUrl은 이제 안 받습니다!
         const apiKey = process.env.CREATOMATE_API_KEY;
 
         if (!apiKey) throw new Error('Creatomate API 키가 없습니다.');
         
-        console.log("🎬 영상 렌더링 요청 시작...");
+        console.log("🎬 영상 렌더링 요청 (내장 성우 모드)...");
 
-        // 안전장치: 이미지가 없으면 기본 이미지 사용
+        // 이미지가 없으면 기본 이미지 사용
         const safeImage = productImage || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1080&q=80';
 
         const response = await fetch('https://api.creatomate.com/v1/renders', {
@@ -29,14 +29,13 @@ export default async function handler(req, res) {
                 output_format: 'mp4',
                 width: 1080,
                 height: 1920,
-                frame_rate: 30,
                 source: {
                     elements: [
                         {
                             type: 'shape',
                             track: 1,
                             width: '100%', height: '100%',
-                            fill_color: '#000000' // 배경 검정
+                            fill_color: '#000000' 
                         },
                         {
                             type: 'image',
@@ -52,16 +51,18 @@ export default async function handler(req, res) {
                             text: script || "대본 없음",
                             font_family: 'Noto Sans KR',
                             fill_color: '#ffffff',
-                            stroke_color: '#000000', stroke_width: '2px',
                             background_color: 'rgba(0,0,0,0.5)',
-                            y: '80%', width: '90%', height: 'auto',
-                            font_size: '60px', text_align: 'center'
+                            y: '75%', width: '90%',
+                            font_size: '50px', text_align: 'center'
                         },
-                        ...(audioUrl ? [{
+                        // ★ 여기가 핵심 변경! (파일 전송 X -> 내부 성우 O)
+                        {
                             type: 'audio',
                             track: 4,
-                            source: audioUrl
-                        }] : [])
+                            provider: 'google', // 구글 성우 사용
+                            voice: 'ko-KR-Standard-A', // 한국어 여자 목소리
+                            text: script // 대본을 직접 읽게 함
+                        }
                     ]
                 }
             })
