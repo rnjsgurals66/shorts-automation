@@ -1,37 +1,23 @@
-// script.js (메뉴 이동 + 영상 제작 통합본)
+// script.js (성우 단계 건너뛰기 버전)
 
-// 1. [화면 전환] 메뉴 카드 누르면 화면 바뀌는 기능
+// 1. 화면 전환 기능
 function selectMode(mode) {
-    console.log(`화면 전환 시도: ${mode}`);
-    
     const selectionScreen = document.getElementById('modeSelection');
     const satireScreen = document.getElementById('satireMode');
     const coupangScreen = document.getElementById('coupangMode');
 
-    // 메뉴 화면 숨기기
     if (selectionScreen) selectionScreen.style.display = 'none';
-
-    // 선택한 화면 보여주기
-    if (mode === 'satire' && satireScreen) {
-        satireScreen.style.display = 'block';
-    } else if (mode === 'coupang' && coupangScreen) {
-        coupangScreen.style.display = 'block';
-    } else {
-        console.error("화면을 찾을 수 없습니다. HTML ID를 확인하세요.");
-    }
+    if (mode === 'satire' && satireScreen) satireScreen.style.display = 'block';
+    if (mode === 'coupang' && coupangScreen) coupangScreen.style.display = 'block';
 }
-
-// 혹시 HTML에 onclick="..."으로 적혀있을 경우를 대비해 전역으로 설정
 window.selectMode = selectMode;
 
-
-// 2. [영상 제작] 버튼 누르면 AI 공장 가동하는 기능
+// 2. 공장 가동
 async function startProcess(mode) {
     const progressDiv = mode === 'satire' ? document.getElementById('satirProgress') : document.getElementById('coupangProgress');
     const resultsDiv = mode === 'satire' ? document.getElementById('satirResults') : document.getElementById('coupangResults');
     const startBtn = mode === 'satire' ? document.getElementById('satirStartBtn') : document.getElementById('coupangStartBtn');
 
-    // 초기화
     startBtn.disabled = true;
     startBtn.textContent = "⏳ 진행 중...";
     progressDiv.textContent = "🚀 작업을 시작합니다...\n";
@@ -52,35 +38,19 @@ async function startProcess(mode) {
         const { script } = await scriptRes.json();
         progressDiv.textContent += `✅ 대본 완료!\n`;
 
-        // (2) TTS 목소리
-        progressDiv.textContent += "🎤 2단계: 성우 녹음 중...\n";
-        const ttsRes = await fetch('/api/tts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: script })
-        });
-
-        if (!ttsRes.ok) throw new Error(`TTS 오류: ${ttsRes.status}`);
-        const audioBlob = await ttsRes.blob();
-        
-        // 오디오 -> Base64 변환
-        const audioBase64 = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.readAsDataURL(audioBlob);
-        });
-        progressDiv.textContent += "✅ 목소리 준비 완료!\n";
+        // (2) 성우 단계 생략 (영상 공장에서 직접 함)
+        progressDiv.textContent += "⏩ 2단계: 성우 녹음 생략 (영상 내장 성우 사용)\n";
 
         // (3) 영상 제작
         progressDiv.textContent += "🎬 3단계: 영상 편집기 가동...\n";
-        const sampleImage = "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1080&q=80"; // 쇼핑 이미지
+        const sampleImage = "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1080&q=80";
 
         const videoRes = await fetch('/api/video', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 script: script,
-                audioUrl: audioBase64,
+                // audioUrl 보낼 필요 없음!
                 productImage: sampleImage
             })
         });
@@ -97,7 +67,7 @@ async function startProcess(mode) {
                         style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
                         🎬 영상 보러 가기 (클릭)
                     </button>
-                    <p style="font-size:12px; color:gray; margin-top:5px;">(하얀 화면 뜨면 F5 눌러주세요)</p>
+                    <p style="font-size:12px; color:gray; margin-top:5px;">(하얀 화면 뜨면 10초 뒤 F5 눌러주세요)</p>
                 </div>
             `;
             resultsDiv.innerHTML = resultHTML;
@@ -113,23 +83,16 @@ async function startProcess(mode) {
     }
 }
 
-// 3. 버튼 연결 (전선 작업)
+// 3. 버튼 연결
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("🔌 버튼 연결 시작...");
-
-    // (1) 메뉴 카드 연결
     const satireCard = document.querySelector('.card-satire');
     const coupangCard = document.querySelector('.card-coupang');
-    
     if (satireCard) satireCard.addEventListener('click', () => selectMode('satire'));
     if (coupangCard) coupangCard.addEventListener('click', () => selectMode('coupang'));
 
-    // (2) 시작 버튼 연결
     const sBtn = document.getElementById('satirStartBtn');
     if (sBtn) sBtn.addEventListener('click', () => startProcess('satire'));
     
     const cBtn = document.getElementById('coupangStartBtn');
     if (cBtn) cBtn.addEventListener('click', () => startProcess('coupang'));
-    
-    console.log("✅ 모든 연결 완료!");
 });
