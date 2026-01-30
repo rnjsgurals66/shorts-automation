@@ -9,14 +9,14 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        const { script, productImage } = req.body; // audioUrl은 이제 안 받습니다!
+        const { script, productImage } = req.body;
         const apiKey = process.env.CREATOMATE_API_KEY;
 
         if (!apiKey) throw new Error('Creatomate API 키가 없습니다.');
         
-        console.log("🎬 영상 렌더링 요청 (내장 성우 모드)...");
+        console.log("🎬 영상 렌더링 요청 (MS 성우 모드)...");
 
-        // 이미지가 없으면 기본 이미지 사용
+        // 안전장치: 이미지 없으면 기본 이미지
         const safeImage = productImage || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1080&q=80';
 
         const response = await fetch('https://api.creatomate.com/v1/renders', {
@@ -55,13 +55,13 @@ export default async function handler(req, res) {
                             y: '75%', width: '90%',
                             font_size: '50px', text_align: 'center'
                         },
-                        // ★ 여기가 핵심 변경! (파일 전송 X -> 내부 성우 O)
+                        // ★ 여기가 핵심 변경! (구글 -> 마이크로소프트)
                         {
                             type: 'audio',
                             track: 4,
-                            provider: 'google', // 구글 성우 사용
-                            voice: 'ko-KR-Standard-A', // 한국어 여자 목소리
-                            text: script // 대본을 직접 읽게 함
+                            provider: 'microsoft',  // 이걸로 바꾸면 100% 해결!
+                            voice: 'ko-KR-SunHiNeural', // 한국어 여자 목소리 (선히)
+                            text: script
                         }
                     ]
                 }
