@@ -12,11 +12,11 @@ export default async function handler(req, res) {
     try {
         // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
         // [여기에 키를 넣으세요] 아까 성공했던 그 키를 그대로 넣으세요!
-        const apiKey = '★여기에_키_붙여넣기★'; 
+        const apiKey = 'd0a0112c94b744f3b7575628b4c0f62bf51fb6082e2bc9c77896f187dd70aa61481116ce5dccaf2316ca97ec6c7e106e'; 
         // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
         if (!apiKey || apiKey.includes('여기에')) {
-             throw new Error('d0a0112c94b744f3b7575628b4c0f62bf51fb6082e2bc9c77896f187dd70aa61481116ce5dccaf2316ca97ec6c7e106e');
+             throw new Error('API 키를 코드에 직접 넣어주세요!');
         }
 
         // 프론트엔드에서 보낸 데이터 받기 (상품 이미지, 대본)
