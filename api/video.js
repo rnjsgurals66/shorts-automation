@@ -9,10 +9,8 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        // ▼▼▼▼▼▼ 여기가 핵심입니다! ▼▼▼▼▼▼
-        // process.env... 이거 다 필요 없고, 따옴표('') 안에 아까 복사한 긴 키를 붙여넣으세요.
-        const apiKey = '여기에_복사한_키를_붙여넣으세요'; 
-        // 예시: const apiKey = 'd0a0112c94b744f3b7575628b4c0f62bf51fb6082e2bc9c77896f187dd70aa61481116ce5dccaf2316ca97ec6c7e106e'; (양쪽 따옴표 필수!)
+ 
+    const apiKey = 'd0a0112c94b744f3b7575628b4c0f62bf51fb6082e2bc9c77896f187dd70aa61481116ce5dccaf2316ca97ec6c7e106e'; (양쪽 따옴표 필수!)
 
         if (!apiKey || apiKey === '여기에_복사한_키를_붙여넣으세요') {
              throw new Error('코드를 수정해서 키를 따옴표 안에 넣어주세요!');
