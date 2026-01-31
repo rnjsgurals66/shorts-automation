@@ -1,8 +1,7 @@
-// api/video.js (실패 없는 OpenAI 성우 버전)
+// api/video.js (키 직접 주입 버전)
 import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
-    // 1. 기본 설정
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -10,15 +9,16 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        const { script, productImage } = req.body;
-        const apiKey = process.env.CREATOMATE_API_KEY;
+        // ▼▼▼▼▼▼ 여기가 핵심입니다! ▼▼▼▼▼▼
+        // process.env... 이거 다 필요 없고, 따옴표('') 안에 아까 복사한 긴 키를 붙여넣으세요.
+        const apiKey = '여기에_복사한_키를_붙여넣으세요'; 
+        // 예시: const apiKey = 'd0a0112c94b744f3b7575628b4c0f62bf51fb6082e2bc9c77896f187dd70aa61481116ce5dccaf2316ca97ec6c7e106e'; (양쪽 따옴표 필수!)
 
-        if (!apiKey) throw new Error('Creatomate API 키가 없습니다.');
+        if (!apiKey || apiKey === '여기에_복사한_키를_붙여넣으세요') {
+             throw new Error('코드를 수정해서 키를 따옴표 안에 넣어주세요!');
+        }
         
-        console.log("🎬 영상 렌더링 요청 (OpenAI Nova 성우)...");
-
-        // 이미지 없으면 기본 이미지
-        const safeImage = productImage || 'https://images.unsplash.com/photo-1556740758-90de374c12ad?auto=format&fit=crop&w=1080&q=80';
+        console.log("🧪 강제 키 주입 모드 실행 중...");
 
         const response = await fetch('https://api.creatomate.com/v1/renders', {
             method: 'POST',
@@ -31,45 +31,27 @@ export default async function handler(req, res) {
                 width: 1080,
                 height: 1920,
                 source: {
-                    // ★핵심: duration을 null로 두면 '목소리 길이'만큼 영상이 만들어짐
-                    duration: null, 
                     elements: [
-                        // 1. 배경 (진한 남색)
                         {
                             type: 'shape',
                             track: 1,
                             width: '100%', height: '100%',
-                            fill_color: '#1a1a2e' 
+                            fill_color: '#ff007f' // 핫핑크 배경
                         },
-                        // 2. 이미지
-                        {
-                            type: 'image',
-                            track: 2,
-                            source: safeImage,
-                            width: '100%', height: '100%',
-                            fit: 'cover',
-                            animations: [
-                                { time: '0s', duration: '100%', type: 'scale', start_scale: '100%', end_scale: '110%' }
-                            ]
-                        },
-                        // 3. 자막
                         {
                             type: 'text',
-                            track: 3,
-                            text: script || "안녕하세요! 대박 상품입니다.",
+                            track: 2,
+                            text: "드디어 성공입니다!",
                             font_family: 'Noto Sans KR',
                             fill_color: '#ffffff',
-                            background_color: 'rgba(0,0,0,0.6)',
-                            y: '75%', width: '90%',
-                            font_size: '52px', text_align: 'center'
+                            y: '50%', font_size: '60px'
                         },
-                        // 4. ★ 핵심 변경: 무조건 되는 OpenAI 성우 사용 ★
                         {
                             type: 'audio',
-                            track: 4,
-                            provider: 'openai',  // 일레븐랩스 대신 OpenAI 사용
-                            voice: 'nova',       // 한국어 발음이 좋은 여성 성우
-                            text: script
+                            track: 3,
+                            provider: 'openai', 
+                            voice: 'alloy',
+                            text: "사장님, 이제 진짜 됩니다. Vercel 설정 무시하고 키를 강제로 넣었거든요."
                         }
                     ]
                 }
@@ -82,12 +64,9 @@ export default async function handler(req, res) {
         }
 
         const data = await response.json();
-        console.log("✅ 영상 렌더링 주소 확보:", data[0].url);
-
         res.status(200).json({ success: true, url: data[0].url });
 
     } catch (error) {
-        console.error('❌ 영상 생성 실패:', error);
         res.status(500).json({ error: error.message });
     }
 }
