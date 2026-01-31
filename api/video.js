@@ -1,4 +1,4 @@
-// api/video.js (키 직접 주입 버전)
+// api/video.js (완전 초기화 및 복구용)
 import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
@@ -9,11 +9,14 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
- 
-    const apiKey = 'd0a0112c94b744f3b7575628b4c0f62bf51fb6082e2bc9c77896f187dd70aa61481116ce5dccaf2316ca97ec6c7e106e'; (양쪽 따옴표 필수!)
+        // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
+        // 주의: 양쪽의 작은 따옴표(')는 절대 지우면 안 됩니다!
+        // 그 사이에 있는 한글만 지우고 키를 넣으세요.
+        const apiKey = '★여기에_키_붙여넣기★'; 
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-        if (!apiKey || apiKey === '여기에_복사한_키를_붙여넣으세요') {
-             throw new Error('코드를 수정해서 키를 따옴표 안에 넣어주세요!');
+        if (!apiKey || apiKey.includes('여기에')) {
+             throw new Error'd0a0112c94b744f3b7575628b4c0f62bf51fb6082e2bc9c77896f187dd70aa61481116ce5dccaf2316ca97ec6c7e106e';
         }
         
         console.log("🧪 강제 키 주입 모드 실행 중...");
@@ -49,7 +52,7 @@ export default async function handler(req, res) {
                             track: 3,
                             provider: 'openai', 
                             voice: 'alloy',
-                            text: "사장님, 이제 진짜 됩니다. Vercel 설정 무시하고 키를 강제로 넣었거든요."
+                            text: "사장님, 이제 진짜 됩니다. 오타를 수정했거든요."
                         }
                     ]
                 }
