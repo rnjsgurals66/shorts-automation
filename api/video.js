@@ -8,16 +8,10 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        // 사장님 키 (수정 X)
+        // 사장님 키 (그대로 두세요!)
         const apiKey = 'd0a0112c94b744f3b7575628b4c0f62bf51fb6082e2bc9c77896f187dd70aa61481116ce5dccaf2316ca97ec6c7e106e';
 
-        const { script, productImage } = req.body;
-        const fallbackImage = 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=1080&q=80';
-        
-        // ★확인용 멘트★: 이 자막이 나오면 코드가 바뀐 겁니다!
-        const finalScript = script || "사장님! 업데이트 성공! 이제 일레븐랩스 목소리가 나옵니다.";
-
-        console.log("🎬 일레븐랩스 영상 요청 중...");
+        console.log("🚀 [테스트] 초록색 화면 & 일레븐랩스 강제 호출 중...");
 
         const response = await fetch('https://api.creatomate.com/v1/renders', {
             method: 'POST',
@@ -32,38 +26,30 @@ export default async function handler(req, res) {
                 source: {
                     duration: 'auto', 
                     elements: [
+                        // 1. 배경: 눈에 확 띄는 ★초록색(#00ff00)★
                         {
                             type: 'shape',
                             track: 1,
                             width: '100%', height: '100%',
-                            fill_color: '#ff007f' 
+                            fill_color: '#00ff00' 
                         },
-                        {
-                            type: 'image',
-                            track: 2,
-                            source: productImage || fallbackImage,
-                            width: '100%', height: '100%',
-                            fit: 'cover',
-                            animations: [
-                                { time: '0s', duration: '100%', type: 'scale', start_scale: '100%', end_scale: '110%' }
-                            ]
-                        },
+                        // 2. 자막: 무조건 이 멘트가 나와야 함
                         {
                             type: 'text',
-                            track: 3,
-                            text: finalScript, // "업데이트 성공!" 자막
+                            track: 2,
+                            text: "사장님! 초록색 떴습니다! 업데이트 성공!",
                             font_family: 'Noto Sans KR',
-                            fill_color: '#ffffff',
-                            background_color: 'rgba(0,0,0,0.7)',
-                            y: '70%', width: '90%',
-                            font_size: '50px', text_align: 'center'
+                            fill_color: '#000000',
+                            y: '50%', width: '90%',
+                            font_size: '60px', text_align: 'center'
                         },
+                        // 3. 성우: 일레븐랩스 (Adam)
                         {
                             type: 'audio',
-                            track: 4,
-                            provider: 'elevenlabs', // ★ 일레븐랩스 지정 ★
-                            voice: 'pNInz6obpgDQGcFmaJgB', // Adam
-                            text: finalScript
+                            track: 3,
+                            provider: 'elevenlabs', 
+                            voice: 'pNInz6obpgDQGcFmaJgB',
+                            text: "사장님, 이제 진짜 된 겁니다. 초록색 화면이 보이시죠?"
                         }
                     ]
                 }
